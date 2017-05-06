@@ -201,10 +201,50 @@ void printMemoryInformations (std::vector<MEMPAGE> pageVector, int pageCount)
 		 strcpy(curMod, pageVector.at(i).info);
 		 printf("Informacoes da pagina %d : %s\t", i, curMod);
 		DWORD newAddress = DWORD(currentPage.mbi.BaseAddress) + currentPage.mbi.RegionSize;
+		printf("Tamanho: 0x%x\t", currentPage.mbi.RegionSize);
 		printf("End Address 0x%x\n", newAddress);
 	}
 
 	 system("pause");
+}
+
+// VirtualProtect
+// https://msdn.microsoft.com/en-us/library/aa366898(VS.85).aspx
+void alteraPemissoesPaginas(std::vector<MEMPAGE> pageVector, int pageCount)
+{
+	unsigned long oldProtect;
+
+	 for(int i = pageCount - 1; i > -1; i--)
+    {
+		char curMod[MAX_MODULE_SIZE] = "";
+
+		auto & currentPage = pageVector.at(i);
+        if(!currentPage.info[0]) //there is a module
+            continue; //skip non-modules
+		if (currentPage.mbi.RegionSize != 0x40000)
+			continue; //skip
+
+		strcpy(curMod, pageVector.at(i).info);
+		printf("Informacoes da pagina %d : %s\t", i, curMod);
+		DWORD newAddress = DWORD(currentPage.mbi.BaseAddress) + currentPage.mbi.RegionSize;
+		printf("Tamanho: 0x%x\t", currentPage.mbi.RegionSize);
+		printf("End Address 0x%x\n", newAddress);
+
+		// __try {
+			bool isOk = VirtualProtect(currentPage.mbi.BaseAddress, currentPage.mbi.RegionSize, PAGE_EXECUTE_READ, &oldProtect);
+		/*}
+		__except (EXCEPTION_EXECUTE_HANDLER) {
+			continue;
+		}*/
+		if( !isOk ) {
+			printf("Falha ao chamar VirtualProtect\n");
+		}
+
+
+	}
+
+	 system("pause");
+
 }
 
 // Padrao 0: 90 90 50 58 
@@ -241,6 +281,7 @@ int main(int argc, char** argv)
     int pagecount = (int)pageVector.size();
 	
 	// printMemoryInformations (pageVector, pagecount);
+	// alteraPemissoesPaginas(pageVector, pagecount);
 
 	 for(int i = 0; i < pagecount -1; i++)
     {

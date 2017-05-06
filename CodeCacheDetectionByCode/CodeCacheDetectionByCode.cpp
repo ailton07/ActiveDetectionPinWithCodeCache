@@ -21,7 +21,9 @@
 #include <Windows.h>
 #include <vector>
 #include <TlHelp32.h> //PROCESSENTRY
-#include <MemUpdateMapInformations.h>
+// #include "MemUpdateMapInformations.h" vs #include <MemUpdateMapInformations.h>
+// http://stackoverflow.com/a/7790180
+#include "MemUpdateMapInformations.h"
 
 #include <string.h>
 
@@ -238,7 +240,8 @@ int main(int argc, char** argv)
 
     int pagecount = (int)pageVector.size();
 	
-	// printMemoryInformations (pageVector, pageCount);
+	// printMemoryInformations (pageVector, pagecount);
+
 	 for(int i = 0; i < pagecount -1; i++)
     {
 		auto & currentPage = pageVector.at(i);
@@ -246,8 +249,14 @@ int main(int argc, char** argv)
             continue; //skip non-modules
 		
 		DWORD endAddress = DWORD(currentPage.mbi.BaseAddress) + currentPage.mbi.RegionSize;
-		if ((int)(currentPage.mbi.BaseAddress) > (int)0x3000000)
-			segundaOcorrenciaAddress = search((int)(currentPage.mbi.BaseAddress), (int)endAddress);
+
+		// Esta otimizacao causava falha na hora de procurar a segunda ocorrencia
+		// No Windows 7 foi verificado que a alocação do Code Cache ocorre com frequencia antes
+		// da posição 0x3000000
+		/*if ((int)(currentPage.mbi.BaseAddress) > (int)0x3000000)
+			segundaOcorrenciaAddress = search((int)(currentPage.mbi.BaseAddress), (int)endAddress);*/
+		// Solução :
+		segundaOcorrenciaAddress = search((int)(currentPage.mbi.BaseAddress), (int)endAddress);
 
 		if (segundaOcorrenciaAddress != 0 ) 
 		{
@@ -255,6 +264,10 @@ int main(int argc, char** argv)
 			break;
 		}
 	}
+	 if (segundaOcorrenciaAddress == 0 ) 
+	 {
+		 printf("\nSegunda ocorrencia nao foi localizada\n");
+	 }
 
 	system("pause");
 

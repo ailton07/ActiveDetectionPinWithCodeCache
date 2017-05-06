@@ -2,7 +2,7 @@
 // https://github.com/x64dbg/x64dbg/blob/598fc65ea0a0ccf9dad1a880355718529730614a/src/dbg/memory.cpp
 //
 
-#include <MemUpdateMapInformations.h>
+#include "MemUpdateMapInformations.h"
 
 std::vector<MEMPAGE> GetPageVector()
 {

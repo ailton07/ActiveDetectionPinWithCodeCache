@@ -1,32 +1,29 @@
-﻿Build started 23/04/2017 00:19:32.
-     1>Project "C:\Users\ailto\Documents\GitHub\ActiveDetectionPinWithCodeCache\CodeCacheDetectionByCode\CodeCacheDetectionByCode.vcxproj" on node 2 (build target(s)).
+﻿Build started 05/05/2017 23:53:39.
+     1>Project "C:\Users\Ailton\Documents\GitHub\ActiveDetectionPinWithCodeCache\CodeCacheDetectionByCode\CodeCacheDetectionByCode.vcxproj" on node 2 (build target(s)).
      1>InitializeBuildStatus:
          Creating "Debug\CodeCacheDetectionByCode.unsuccessfulbuild" because "AlwaysCreate" was specified.
        ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /I"C:\Users\ailto\Documents\Visual Studio 2010\Projects\CodeCacheDetectionByCode\CodeCacheDetectionByCode" /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt CodeCacheDetectionByCode.cpp MemUpdateMapInformations.cpp
-         MemUpdateMapInformations.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt CodeCacheDetectionByCode.cpp
          CodeCacheDetectionByCode.cpp
-     1>c:\users\ailto\documents\github\activedetectionpinwithcodecache\codecachedetectionbycode\codecachedetectionbycode.cpp(199): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+     1>c:\users\ailton\documents\github\activedetectionpinwithcodecache\codecachedetectionbycode\codecachedetectionbycode.cpp(199): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
                  c:\program files (x86)\microsoft visual studio 10.0\vc\include\string.h(105) : see declaration of 'strcpy'
-         Generating Code...
        ManifestResourceCompile:
-         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\rc.exe /nologo /fo"Debug\CodeCacheDetectionByCode.exe.embed.manifest.res" Debug\CodeCacheDetectionByCode_manifest.rc 
+         All outputs are up-to-date.
        Link:
-         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\ailto\Documents\GitHub\ActiveDetectionPinWithCodeCache\Debug\CodeCacheDetectionByCode.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /ManifestFile:"Debug\CodeCacheDetectionByCode.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"C:\Users\ailto\Documents\GitHub\ActiveDetectionPinWithCodeCache\Debug\CodeCacheDetectionByCode.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\ailto\Documents\GitHub\ActiveDetectionPinWithCodeCache\Debug\CodeCacheDetectionByCode.lib" /MACHINE:X86 Debug\CodeCacheDetectionByCode.exe.embed.manifest.res
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Ailton\Documents\GitHub\ActiveDetectionPinWithCodeCache\Debug\CodeCacheDetectionByCode.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /ManifestFile:"Debug\CodeCacheDetectionByCode.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"C:\Users\Ailton\Documents\GitHub\ActiveDetectionPinWithCodeCache\Debug\CodeCacheDetectionByCode.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Ailton\Documents\GitHub\ActiveDetectionPinWithCodeCache\Debug\CodeCacheDetectionByCode.lib" /MACHINE:X86 Debug\CodeCacheDetectionByCode.exe.embed.manifest.res
          Debug\CodeCacheDetectionByCode.obj
          Debug\MemUpdateMapInformations.obj
-         LINK : C:\Users\ailto\Documents\GitHub\ActiveDetectionPinWithCodeCache\Debug\CodeCacheDetectionByCode.exe not found or not built by the last incremental link; performing full link
        Manifest:
-         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /out:"Debug\CodeCacheDetectionByCode.exe.embed.manifest" /manifest Debug\CodeCacheDetectionByCode.exe.intermediate.manifest
+         c:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /out:"Debug\CodeCacheDetectionByCode.exe.embed.manifest" /manifest Debug\CodeCacheDetectionByCode.exe.intermediate.manifest
          All outputs are up-to-date.
        LinkEmbedManifest:
          All outputs are up-to-date.
-         CodeCacheDetectionByCode.vcxproj -> C:\Users\ailto\Documents\GitHub\ActiveDetectionPinWithCodeCache\Debug\CodeCacheDetectionByCode.exe
+         CodeCacheDetectionByCode.vcxproj -> C:\Users\Ailton\Documents\GitHub\ActiveDetectionPinWithCodeCache\Debug\CodeCacheDetectionByCode.exe
        FinalizeBuildStatus:
          Deleting file "Debug\CodeCacheDetectionByCode.unsuccessfulbuild".
          Touching "Debug\CodeCacheDetectionByCode.lastbuildstate".
-     1>Done Building Project "C:\Users\ailto\Documents\GitHub\ActiveDetectionPinWithCodeCache\CodeCacheDetectionByCode\CodeCacheDetectionByCode.vcxproj" (build target(s)).
+     1>Done Building Project "C:\Users\Ailton\Documents\GitHub\ActiveDetectionPinWithCodeCache\CodeCacheDetectionByCode\CodeCacheDetectionByCode.vcxproj" (build target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:04.90
+Time Elapsed 00:00:02.86

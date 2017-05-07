@@ -21,3 +21,5 @@ typedef struct
 } MEMPAGE;
 
 std::vector<MEMPAGE> GetPageVector();
+
+std::vector<MEMPAGE> GetPageCodeCacheVector();

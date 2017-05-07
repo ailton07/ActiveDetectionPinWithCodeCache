@@ -208,14 +208,35 @@ void printMemoryInformations (std::vector<MEMPAGE> pageVector, int pageCount)
 	 system("pause");
 }
 
+bool runVirtualProtect(MEMPAGE currentPage, DWORD * oldProtect)
+{
+	bool retorno = false;
+	__try {
+		retorno = VirtualProtect(currentPage.mbi.BaseAddress, currentPage.mbi.RegionSize, PAGE_EXECUTE_READ, oldProtect);
+	}
+	  __except (EXCEPTION_EXECUTE_HANDLER) {
+	// __except (EXCEPTION_CONTINUE_EXECUTION) {
+		//continue;
+		// runVirtualProtect(currentPage, oldProtect);
+		 // return retorno;
+	}
+
+	return retorno;
+}
+
 // VirtualProtect
 // https://msdn.microsoft.com/en-us/library/aa366898(VS.85).aspx
 void alteraPemissoesPaginas(std::vector<MEMPAGE> pageVector, int pageCount)
 {
-	unsigned long oldProtect;
-
-	 for(int i = pageCount - 1; i > -1; i--)
+	 // for(int i = pageCount - 1; i > -1; i--)
+	for(int i = 0; i < pageCount - 1 -1; i++)
+	// for(int i = 0; i < 3; i++)
+	// for(int i = 0; i < 2; i++)
     {
+		// unsigned long oldProtect
+		DWORD oldProtect = 0;
+		bool isOk = false;
+
 		char curMod[MAX_MODULE_SIZE] = "";
 
 		auto & currentPage = pageVector.at(i);
@@ -230,21 +251,17 @@ void alteraPemissoesPaginas(std::vector<MEMPAGE> pageVector, int pageCount)
 		printf("Tamanho: 0x%x\t", currentPage.mbi.RegionSize);
 		printf("End Address 0x%x\n", newAddress);
 
-		// __try {
-			bool isOk = VirtualProtect(currentPage.mbi.BaseAddress, currentPage.mbi.RegionSize, PAGE_EXECUTE_READ, &oldProtect);
-		/*}
-		__except (EXCEPTION_EXECUTE_HANDLER) {
-			continue;
-		}*/
+		// Chamada a Virtual Protect foi removida daqui pra evitar o bug descrito em:
+		// https://msdn.microsoft.com/en-us/library/xwtb73ad(v=vs.100).aspx
+		// isOk = VirtualProtect(currentPage.mbi.BaseAddress, currentPage.mbi.RegionSize, PAGE_EXECUTE_READ, &oldProtect);
+		isOk = runVirtualProtect(currentPage, &oldProtect);
+
 		if( !isOk ) {
 			printf("Falha ao chamar VirtualProtect\n");
 		}
-
-
 	}
 
 	 system("pause");
-
 }
 
 // Padrao 0: 90 90 50 58 
@@ -255,7 +272,6 @@ void alteraPemissoesPaginas(std::vector<MEMPAGE> pageVector, int pageCount)
 
 // Padrao 1: 78 56 34 12 
 // mov ebx,0x12345678
-
 int main(int argc, char** argv)
 {
 	unsigned char* primeiraOcorrenciaAddress = 0;
@@ -271,17 +287,24 @@ int main(int argc, char** argv)
 	printf("Executou test(); Continuar ? \n");
 	system("pause");
 
-	// primeiraOcorrenciaAddress = search(&test);
 	primeiraOcorrenciaAddress = search((int)ptTest);
 	printf("Endereco primeira ocorrencia: %x\n", primeiraOcorrenciaAddress);
 	system("pause");
 
-	std::vector<MEMPAGE> pageVector = GetPageVector();
+	// std::vector<MEMPAGE> pageVector = GetPageVector();
+	std::vector<MEMPAGE> pageVector = GetPageCodeCacheVector();
 
     int pagecount = (int)pageVector.size();
+	printf("pagecount = %d\n", pagecount);
 	
 	// printMemoryInformations (pageVector, pagecount);
 	// alteraPemissoesPaginas(pageVector, pagecount);
+
+	//// Refresh nas paginas apos altera-las
+	//// pageVector = GetPageVector();
+	//pageVector = GetPageCodeCacheVector();
+ //   pagecount = (int)pageVector.size();
+	//printf("pagecount = %d\n", pagecount);
 
 	 for(int i = 0; i < pagecount -1; i++)
     {
@@ -296,6 +319,7 @@ int main(int argc, char** argv)
 		// da posição 0x3000000
 		/*if ((int)(currentPage.mbi.BaseAddress) > (int)0x3000000)
 			segundaOcorrenciaAddress = search((int)(currentPage.mbi.BaseAddress), (int)endAddress);*/
+		
 		// Solução :
 		segundaOcorrenciaAddress = search((int)(currentPage.mbi.BaseAddress), (int)endAddress);
 

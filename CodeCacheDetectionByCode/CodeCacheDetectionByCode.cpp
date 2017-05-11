@@ -30,20 +30,7 @@
 // De acordo com:
 // https://www.blackhat.com/docs/asia-16/materials/asia-16-Sun-Break-Out-Of-The-Truman-Show-Active-Detection-And-Escape-Of-Dynamic-Binary-Instrumentation.pdf
 // Signature can be certain code or data
-// #define padrao 1
-
-
-int filter(unsigned int code, struct _EXCEPTION_POINTERS *ep) {
-	// puts("in filter.");
-	if (code == EXCEPTION_ACCESS_VIOLATION) {
-		// puts("caught AV as expected.");
-		return EXCEPTION_EXECUTE_HANDLER;
-	}
-	else {
-		// puts("didn't catch AV, unexpected.");
-		return EXCEPTION_CONTINUE_SEARCH;
-	};
-}
+#define padrao 1
 
 void test()
 {
@@ -59,7 +46,9 @@ void test()
 	// Padrao 1
 	#ifdef padrao
 	__asm {
-		 mov ebx,0x12345678
+		// Operacoes com o registrador EBX sao reescritas pelo PIN
+		// mov ebx,0x12345678
+		mov eax,0x12345678
 	}
 	#endif
 
@@ -86,7 +75,8 @@ unsigned char* search(int startAddress, int endAddress)
 				data[3] == 0x58)
 			#endif
 			#ifdef padrao
-				if (data[0] == 0xBB &&
+				// if (data[0] == 0xBB &&
+				if (data[0] == 0xB8 &&
 				data[1] == 0x78 &&
 				data[2] == 0x56 &&
 				data[3] == 0x34 &&
@@ -106,7 +96,7 @@ unsigned char* search(int startAddress, int endAddress)
 				#endif
 				#ifdef padrao
 					// 0x5678 Aparece invertido, ja que buscamos 0x7856
-					unsigned char* data_ = (unsigned char*) memchr((const void*)(data + 1), 0x5678BB, endAddress - startAddress);
+					unsigned char* data_ = (unsigned char*) memchr((const void*)(data + 1), 0x5678B8, endAddress - startAddress);
 				#endif
 			
 				if (data_ == 0)
@@ -149,7 +139,8 @@ unsigned char* search(int startAddress)
 				data[3] == 0x58)
 			#endif
 			#ifdef padrao
-				if (data[0] == 0xBB &&
+				//if (data[0] == 0xBB &&
+				if (data[0] == 0xB8 &&
 				data[1] == 0x78 &&
 				data[2] == 0x56 &&
 				data[3] == 0x34 &&
@@ -168,7 +159,7 @@ unsigned char* search(int startAddress)
 				#endif
 				#ifdef padrao
 					// 0x5678 Aparece invertido, ja que buscamos 0x7856
-					unsigned char* data_ = (unsigned char*) memchr((const void*)(data + 1), 0x5678BB, endAddress - startAddress);
+					unsigned char* data_ = (unsigned char*) memchr((const void*)(data + 1), 0x5678B8, endAddress - startAddress);
 				#endif
 				if (data_ == 0)
 					return 0;
@@ -208,61 +199,6 @@ void printMemoryInformations (std::vector<MEMPAGE> pageVector, int pageCount)
 	 system("pause");
 }
 
-bool runVirtualProtect(MEMPAGE currentPage, DWORD * oldProtect)
-{
-	bool retorno = false;
-	__try {
-		retorno = VirtualProtect(currentPage.mbi.BaseAddress, currentPage.mbi.RegionSize, PAGE_EXECUTE_READ, oldProtect);
-	}
-	  __except (EXCEPTION_EXECUTE_HANDLER) {
-	// __except (EXCEPTION_CONTINUE_EXECUTION) {
-		//continue;
-		// runVirtualProtect(currentPage, oldProtect);
-		 // return retorno;
-	}
-
-	return retorno;
-}
-
-// VirtualProtect
-// https://msdn.microsoft.com/en-us/library/aa366898(VS.85).aspx
-void alteraPemissoesPaginas(std::vector<MEMPAGE> pageVector, int pageCount)
-{
-	 // for(int i = pageCount - 1; i > -1; i--)
-	for(int i = 0; i < pageCount - 1 -1; i++)
-	// for(int i = 0; i < 3; i++)
-	// for(int i = 0; i < 2; i++)
-    {
-		// unsigned long oldProtect
-		DWORD oldProtect = 0;
-		bool isOk = false;
-
-		char curMod[MAX_MODULE_SIZE] = "";
-
-		auto & currentPage = pageVector.at(i);
-        if(!currentPage.info[0]) //there is a module
-            continue; //skip non-modules
-		if (currentPage.mbi.RegionSize != 0x40000)
-			continue; //skip
-
-		strcpy(curMod, pageVector.at(i).info);
-		printf("Informacoes da pagina %d : %s\t", i, curMod);
-		DWORD newAddress = DWORD(currentPage.mbi.BaseAddress) + currentPage.mbi.RegionSize;
-		printf("Tamanho: 0x%x\t", currentPage.mbi.RegionSize);
-		printf("End Address 0x%x\n", newAddress);
-
-		// Chamada a Virtual Protect foi removida daqui pra evitar o bug descrito em:
-		// https://msdn.microsoft.com/en-us/library/xwtb73ad(v=vs.100).aspx
-		// isOk = VirtualProtect(currentPage.mbi.BaseAddress, currentPage.mbi.RegionSize, PAGE_EXECUTE_READ, &oldProtect);
-		isOk = runVirtualProtect(currentPage, &oldProtect);
-
-		if( !isOk ) {
-			printf("Falha ao chamar VirtualProtect\n");
-		}
-	}
-
-	 system("pause");
-}
 
 // Padrao 0: 90 90 50 58 
 // NOP 
@@ -300,12 +236,6 @@ int main(int argc, char** argv)
 	// printMemoryInformations (pageVector, pagecount);
 	// alteraPemissoesPaginas(pageVector, pagecount);
 
-	//// Refresh nas paginas apos altera-las
-	//// pageVector = GetPageVector();
-	//pageVector = GetPageCodeCacheVector();
- //   pagecount = (int)pageVector.size();
-	//printf("pagecount = %d\n", pagecount);
-
 	 for(int i = 0; i < pagecount -1; i++)
     {
 		auto & currentPage = pageVector.at(i);
@@ -314,13 +244,6 @@ int main(int argc, char** argv)
 		
 		DWORD endAddress = DWORD(currentPage.mbi.BaseAddress) + currentPage.mbi.RegionSize;
 
-		// Esta otimizacao causava falha na hora de procurar a segunda ocorrencia
-		// No Windows 7 foi verificado que a alocação do Code Cache ocorre com frequencia antes
-		// da posição 0x3000000
-		/*if ((int)(currentPage.mbi.BaseAddress) > (int)0x3000000)
-			segundaOcorrenciaAddress = search((int)(currentPage.mbi.BaseAddress), (int)endAddress);*/
-		
-		// Solução :
 		segundaOcorrenciaAddress = search((int)(currentPage.mbi.BaseAddress), (int)endAddress);
 
 		if (segundaOcorrenciaAddress != 0 ) 
@@ -346,6 +269,17 @@ int main(int argc, char** argv)
 
 
 // LEGACY
+//int filter(unsigned int code, struct _EXCEPTION_POINTERS *ep) {
+//	// puts("in filter.");
+//	if (code == EXCEPTION_ACCESS_VIOLATION) {
+//		// puts("caught AV as expected.");
+//		return EXCEPTION_EXECUTE_HANDLER;
+//	}
+//	else {
+//		// puts("didn't catch AV, unexpected.");
+//		return EXCEPTION_CONTINUE_SEARCH;
+//	};
+//}
 //
 //unsigned char* search(int startAddress)
 //{
@@ -394,4 +328,59 @@ int main(int argc, char** argv)
 //
 //	} // for
 //	return 0;
+//}
+//bool runVirtualProtect(MEMPAGE currentPage, DWORD * oldProtect)
+//{
+//	bool retorno = false;
+//	__try {
+//		retorno = VirtualProtect(currentPage.mbi.BaseAddress, currentPage.mbi.RegionSize, PAGE_EXECUTE_READ, oldProtect);
+//	}
+//	  __except (EXCEPTION_EXECUTE_HANDLER) {
+//	// __except (EXCEPTION_CONTINUE_EXECUTION) {
+//		//continue;
+//		// runVirtualProtect(currentPage, oldProtect);
+//		 // return retorno;
+//	}
+//
+//	return retorno;
+//}
+//
+//// VirtualProtect
+//// https://msdn.microsoft.com/en-us/library/aa366898(VS.85).aspx
+//void alteraPemissoesPaginas(std::vector<MEMPAGE> pageVector, int pageCount)
+//{
+//	 // for(int i = pageCount - 1; i > -1; i--)
+//	for(int i = 0; i < pageCount - 1 -1; i++)
+//	// for(int i = 0; i < 3; i++)
+//	// for(int i = 0; i < 2; i++)
+//    {
+//		// unsigned long oldProtect
+//		DWORD oldProtect = 0;
+//		bool isOk = false;
+//
+//		char curMod[MAX_MODULE_SIZE] = "";
+//
+//		auto & currentPage = pageVector.at(i);
+//        if(!currentPage.info[0]) //there is a module
+//            continue; //skip non-modules
+//		if (currentPage.mbi.RegionSize != 0x40000)
+//			continue; //skip
+//
+//		strcpy(curMod, pageVector.at(i).info);
+//		printf("Informacoes da pagina %d : %s\t", i, curMod);
+//		DWORD newAddress = DWORD(currentPage.mbi.BaseAddress) + currentPage.mbi.RegionSize;
+//		printf("Tamanho: 0x%x\t", currentPage.mbi.RegionSize);
+//		printf("End Address 0x%x\n", newAddress);
+//
+//		// Chamada a Virtual Protect foi removida daqui pra evitar o bug descrito em:
+//		// https://msdn.microsoft.com/en-us/library/xwtb73ad(v=vs.100).aspx
+//		// isOk = VirtualProtect(currentPage.mbi.BaseAddress, currentPage.mbi.RegionSize, PAGE_EXECUTE_READ, &oldProtect);
+//		isOk = runVirtualProtect(currentPage, &oldProtect);
+//
+//		if( !isOk ) {
+//			printf("Falha ao chamar VirtualProtect\n");
+//		}
+//	}
+//
+//	 system("pause");
 //}

@@ -227,8 +227,8 @@ int main(int argc, char** argv)
 	printf("Endereco primeira ocorrencia: %x\n", primeiraOcorrenciaAddress);
 	system("pause");
 
-	// std::vector<MEMPAGE> pageVector = GetPageVector();
-	std::vector<MEMPAGE> pageVector = GetPageCodeCacheVector();
+	std::vector<MEMPAGE> pageVector = GetPageVector();
+	// std::vector<MEMPAGE> pageVector = GetPageCodeCacheVector();
 
     int pagecount = (int)pageVector.size();
 	printf("pagecount = %d\n", pagecount);
